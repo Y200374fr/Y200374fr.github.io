@@ -2,9 +2,87 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>图片展示页</title>
+    <style>
+        /* 页面整体风格：柔和背景 + 清晰排版 */
+        body {
+            background-color: #f8f9fa;
+            font-family: "微软雅黑", sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        /* 按钮组布局：水平排列 + 居中 */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* 按钮样式：渐变色彩 + 圆角 + 交互反馈 */
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to right, #4a90e2, #3366cc);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #3366cc, #2b58a5);
+        }
+
+        /* 图片容器：居中 + 阴影 + 响应式 */
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.02);
+        }
+    </style>
 </head>
 <body>
-    <img src="1.png" alt="图片1">
-    <img src="2.png" alt="图片2">
+    <!-- 按钮组：返回主界面 + 下一页 -->
+    <div class="button-group">
+        <button onclick="goToMain()">返回主界面</button>
+        <button onclick="goToNextPage()">下一页（文本输入）</button>
+    </div>
+
+    <!-- 图片展示区域 -->
+    <div class="image-container">
+        <img src="1.png" alt="图片1">
+        <img src="2.png" alt="图片2">
+    </div>
+
+    <script>
+        // 跳转到主界面（index.html）
+        function goToMain() {
+            window.location.href = "index.html";
+        }
+
+        // 跳转到下一页（netx.html）
+        function goToNextPage() {
+            window.location.href = "netx.html";
+        }
+    </script>
 </body>
 </html>
