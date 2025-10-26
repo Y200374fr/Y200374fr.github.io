@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>趣味小游戏</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: "微软雅黑", sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .game-container {
+      text-align: center;
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .target {
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      border-radius: 50%;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .target:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .target:active {
+      transform: scale(0.95);
+    }
+
+    .progress {
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>点击小游戏</h1>
+    <p>点击下方目标，达到10次即可“通关”</p >
+    <div class="target" id="target">点击我</div>
+    <div class="progress" id="progress">进度：0/10</div>
+  </div>
+
+  <script>
+    const target = document.getElementById('target');
+    const progress = document.getElementById('progress');
+    let count = 0;
+    const targetCount = 10;
+
+    target.addEventListener('click', () => {
+      count++;
+      progress.textContent = `进度：${count}/${targetCount}`;
+      
+      if (count >= targetCount) {
+        alert('虽然你赢了，但是你也输了');
+        count = 0;
+        progress.textContent = `进度：${count}/${targetCount}`;
+      }
+    });
+  </script>
+</body>
+</html>

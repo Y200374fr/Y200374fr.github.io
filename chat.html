@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>美化版实时聊天框</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    /* 页面整体样式 */
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      font-family: "微软雅黑", sans-serif;
+    }
+
+    /* 聊天容器样式 */
+    .chat-container {
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* 消息区域样式 */
+    .chat-messages {
+      height: 400px;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: white;
+    }
+
+    /* 消息气泡样式 */
+    .message {
+      max-width: 70%;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 18px;
+      line-height: 1.5;
+    }
+    .self-msg {
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      margin-left: auto;
+    }
+    .other-msg {
+      background: #f1f1f1;
+      color: #333;
+      margin-right: auto;
+    }
+
+    /* 输入区域样式 */
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      outline: none;
+      border-radius: 0 0 0 10px;
+    }
+    .chat-input button {
+      padding: 0 25px;
+      border: none;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      cursor: pointer;
+      border-radius: 0 0 10px 0;
+    }
+
+    /* 状态提示样式 */
+    .status {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      padding: 10px 0;
+      background-color: #f8f9fa;
+    }
+
+    /* 右下角游戏标志样式 */
+    .game-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .game-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="status" id="status">正在连接WebSocket服务...</div>
+    <div class="chat-messages" id="messages"></div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="输入消息...">
+      <button id="sendBtn">发送</button>
+    </div>
+  </div>
+
+  <!-- 右下角游戏标志（添加点击跳转事件） -->
+  <div class="game-icon" onclick="goToGamePage()">
+    <<i class="fas fa-gamepad"></</i>
+  </div>
+
+  <script>
+    let ws;
+    let reconnectInterval;
+
+    function initWebSocket() {
+      ws = new WebSocket('wss://ws.postman-echo.com/raw');
+      const status = document.getElementById('status');
+      const messages = document.getElementById('messages');
+      const messageInput = document.getElementById('messageInput');
+      const sendBtn = document.getElementById('sendBtn');
+
+      ws.onopen = () => {
+        status.textContent = "WebSocket已连接，可正常聊天";
+        clearInterval(reconnectInterval);
+      };
+
+      ws.onclose = () => {
+        status.textContent = "WebSocket连接已断开，正在尝试重连...";
+        reconnectInterval = setInterval(initWebSocket, 3000);
+      };
+
+      ws.onerror = () => {
+        status.textContent = "WebSocket连接出错，正在尝试重连...";
+        clearInterval(reconnectInterval);
+        reconnectInterval = setInterval(initWebSocket, 3000);
+      };
+
+      ws.onmessage = (event) => {
+        const otherMsg = document.createElement('div');
+        otherMsg.className = 'message other-msg';
+        otherMsg.textContent = `对方: ${event.data}`;
+        messages.appendChild(otherMsg);
+        messages.scrollTop = messages.scrollHeight;
+      };
+
+      function sendMessage() {
+        const content = messageInput.value.trim();
+        if (content) {
+          const selfMsg = document.createElement('div');
+          selfMsg.className = 'message self-msg';
+          selfMsg.textContent = `我: ${content}`;
+          messages.appendChild(selfMsg);
+          ws.send(content);
+          messageInput.value = '';
+          messages.scrollTop = messages.scrollHeight;
+        }
+      }
+
+      sendBtn.addEventListener('click', sendMessage);
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+    }
+
+    // 点击游戏图标跳转函数
+   function goToGamePage() {
+  window.location.href = "game.html"; // 确保此处文件名与实际保存的游戏页文件名完全一致
+}
