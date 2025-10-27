@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晚风俱乐部 - 价格表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            font-family: "SimHei", "Microsoft YaHei", sans-serif;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .title {
+            text-align: center;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin: 20px 0 30px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .price-list {
+            background-color: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .category {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .category:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .category-title {
+            font-size: 1.3rem;
+            color: #93c5fd;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-title::before {
+            content: "•";
+            color: #3b82f6;
+        }
+        .price-items {
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .price-item {
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+        .quick-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: 6px 16px;
+            background-color: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 20px;
+            color: #bfdbfe;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background-color: rgba(59, 130, 246, 0.4);
+        }
+        @media (max-width: 600px) {
+            .price-list {
+                padding: 15px;
+            }
+            .title {
+                font-size: 1.5rem;
+                margin: 10px 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 保留晚风背景图 -->
+    <div class="background">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1000 800">
+            <!-- 夜空渐变背景 -->
+            <defs>
+                <linearGradient id="nightSky" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#0a192f" />
+                    <stop offset="100%" stop-color="#112240" />
+                </linearGradient>
+                
+                <!-- 星星滤镜 -->
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+            
+            <!-- 背景 -->
+            <rect width="100%" height="100%" fill="url(#nightSky)" />
+            
+            <!-- 星星 -->
+            <g filter="url(#glow)">
+                <circle cx="120" cy="80" r="1.5" fill="#e6f1ff" />
+                <circle cx="250" cy="150" r="1" fill="#e6f1ff" />
+                <circle cx="380" cy="60" r="2" fill="#e6f1ff" />
+                <circle cx="450" cy="200" r="1" fill="#e6f1ff" />
+                <circle cx="580" cy="100" r="1.5" fill="#e6f1ff" />
+                <circle cx="720" cy="180" r="1" fill="#e6f1ff" />
+                <circle cx="850" cy="90" r="2" fill="#e6f1ff" />
+                <circle cx="180" cy="300" r="1" fill="#e6f1ff" />
+                <circle cx="320" cy="250" r="1.5" fill="#e6f1ff" />
+                <circle cx="480" cy="320" r="1" fill="#e6f1ff" />
+                <circle cx="620" cy="280" r="2" fill="#e6f1ff" />
+                <circle cx="780" cy="350" r="1" fill="#e6f1ff" />
+                <circle cx="920" cy="220" r="1.5" fill="#e6f1ff" />
+                <circle cx="150" cy="500" r="2" fill="#e6f1ff" />
+                <circle cx="290" cy="450" r="1" fill="#e6f1ff" />
+                <circle cx="420" cy="520" r="1.5" fill="#e6f1ff" />
+                <circle cx="590" cy="480" r="1" fill="#e6f1ff" />
+                <circle cx="730" cy="550" r="2" fill="#e6f1ff" />
+                <circle cx="880" cy="430" r="1" fill="#e6f1ff" />
+                <circle cx="100" cy="650" r="1.5" fill="#e6f1ff" />
+                <circle cx="250" cy="700" r="1" fill="#e6f1ff" />
+                <circle cx="400" cy="630" r="2" fill="#e6f1ff" />
+                <circle cx="550" cy="680" r="1" fill="#e6f1ff" />
+                <circle cx="700" cy="620" r="1.5" fill="#e6f1ff" />
+                <circle cx="850" cy="690" r="1" fill="#e6f1ff" />
+                <circle cx="950" cy="580" r="2" fill="#e6f1ff" />
+            </g>
+            
+            <!-- 月亮 -->
+            <circle cx="800" cy="120" r="40" fill="#f0f0f0" />
+            <circle cx="780" cy="100" r="15" fill="#e6e6e6" />
+        </svg>
+    </div>
+    
+    <div class="container">
+        <h1 class="title">晚风俱乐部 - 价格表</h1>
+        
+        <!-- 快捷筛选按钮 -->
+        <div class="quick-filter">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="古城">古城摸金</button>
+            <button class="filter-btn" data-filter="四队">四队飞天</button>
+            <button class="filter-btn" data-filter="指定">指定物品</button>
+            <button class="filter-btn" data-filter="抓怪">抓怪价格</button>
+            <button class="filter-btn" data-filter="PVP">PVP</button>
+            <button class="filter-btn" data-filter="代肝">代肝</button>
+        </div>
+        
+        <!-- 价格列表（去掉了聊天框形式） -->
+        <div class="price-list">
+            <div class="category" data-category="古城">
+                <div class="category-title">古城技术（摸金）价格</div>
+                <div class="price-items">
+                    <div class="price-item">包装备：1.5r/局</div>
+                    <div class="price-item">不包装备：1.2r/局</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="昆仑">
+                <div class="category-title">昆仑技术价格</div>
+                <div class="price-items">
+                    <div class="price-item">默认包装备：1.6r/局</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="双队">
+                <div class="category-title">双队技术价格</div>
+                <div class="price-items">
+                    <div class="price-item">3r/局（双队为PVP无娱乐）</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="车里蹲">
+                <div class="category-title">车里蹲价格</div>
+                <div class="price-items">
+                    <div class="price-item">古城：1.2r/局（无装备）</div>
+                    <div class="price-item">昆仑：1.8r/局（无装备）</div>
+                    <div class="price-item">双队：3r/局（1桃木剑，4摸金符）</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="指定">
+                <div class="category-title">指定单价格</div>
+                <div class="price-items">
+                    <div class="price-item">神鹿：34r</div>
+                    <div class="price-item">戒指：1.2r</div>
+                    <div class="price-item">双鱼玉佩：2.4r</div>
+                    <div class="price-item">面具：4.8r</div>
+                    <div class="price-item">鬼玺：7.2r</div>
+                    <div class="price-item">尸香魔芋：6r</div>
+                    <div class="price-item">大剑：53r</div>
+                    <div class="price-item">圣杯：94r</div>
+                    <div class="price-item">雪莲：4.8r</div>
+                    <div class="price-item">白玉环：15r</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="PVP">
+                <div class="category-title">PVP价格</div>
+                <div class="price-items">
+                    <div class="price-item">双队：1人3r/局，2人5r/局，3人8r/局（不建议）</div>
+                    <div class="price-item">四队：1人4r/局，2人7r/局，3人10r/局（喷包加2r，飞天加2r）</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="代肝">
+                <div class="category-title">代肝价格</div>
+                <div class="price-items">
+                    <div class="price-item">100万：6r</div>
+                    <div class="price-item">200万：9r</div>
+                    <div class="price-item">300万：12r</div>
+                    <div class="price-item">400万：16r</div>
+                    <div class="price-item">500万：22r</div>
+                    <div class="price-item">1000万：36r</div>
+                </div>
+            </div>
+            
+            <div class="category" data-category="抓怪">
+                <div class="category-title">抓怪价格</div>
+                <div class="price-items">
+                    <div class="price-item">古城：2r/局（至少一只狼加其他指定）</div>
+                    <div class="price-item">昆仑噩梦：3r/局（指定地龙加1r）</div>
+                    <div class="price-item">昆仑极限：2r/局（可指定加1r）</div>
+                    <div class="price-item">备注：娱乐要求开麦，技术开麦加1r，可指定陪练，可存单</div>
+                    <div class="price-item">（神鹿加4r，大剑加5r，圣杯加6r）</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 筛选功能
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const categories = document.querySelectorAll('.category');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 更新按钮状态
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-filter');
+                
+                // 筛选分类
+                categories.forEach(category => {
+                    if (filter === 'all' || category.getAttribute('data-category') === filter) {
+                        category.style.display = 'block';
+                    } else {
+                        category.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

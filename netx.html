@@ -1,81 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>文本输入页</title>
-    <style>
-        /* 页面整体布局：居中显示 */
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f5f5f5;
-            font-family: "微软雅黑", sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <title>美化版-进入聊天</title>
+  <style>
+    /* 页面整体样式 */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "微软雅黑", sans-serif;
+    }
 
-        /* 文本框样式：圆角、边框、内边距 */
-        textarea {
-            width: 80%;
-            max-width: 500px;
-            height: 200px;
-            padding: 15px;
-            border: 2px solid #3366cc;
-            border-radius: 8px;
-            font-size: 16px;
-            line-height: 1.6;
-            resize: vertical; /* 允许垂直拉伸 */
-            transition: border-color 0.3s;
-        }
+    /* 美化后的按钮 */
+    .chat-btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
 
-        textarea:focus {
-            border-color: #2b58a5;
-            outline: none;
-        }
+    .chat-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
 
-        /* 按钮样式：圆角、悬停效果 */
-        button {
-            margin-top: 20px;
-            padding: 10px 25px;
-            background-color: #3366cc;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2b58a5;
-        }
-
-        /* 标题样式 */
-        h2 {
-            color: #3366cc;
-            margin-bottom: 20px;
-        }
-    </style>
+    .chat-btn:active {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-    <h2>说出你的想法</h2>
-    <textarea placeholder="在这里输入您的内容..."></textarea>
-    <button onclick="goBackToImages()">返回图片页面</button>
+  <button class="chat-btn" onclick="goToChat()">进入聊天框</button>
 
-    <script>
-        function goBackToImages() {
-            window.location.href = "images.html";
-        }
-    </script>
-</body>
-</html><!-- 新增“确定”按钮 -->
-<button onclick="goToContent()">确定</button>
-
-<script>
-    // 新增跳转函数
-    function goToContent() {
-        window.location.href = "conten.html";
+  <script>
+    function goToChat() {
+      window.location.href = "chat.html";
     }
-</script>
+  </script>
+</body>
+</html>
