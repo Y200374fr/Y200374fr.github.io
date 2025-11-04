@@ -1,0 +1,1737 @@
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晚风俱乐部 - 顾客下单</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            secondary: '#8b5cf6',
+            dark: '#1e1b4b',
+            light: '#e0e7ff'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.1), 0 10px 10px -5px rgba(99, 102, 241, 0.04);
+      }
+      .bg-gradient-primary {
+        background-image: linear-gradient(135deg, #6366f1, #8b5cf6);
+      }
+      /* 移动端底部固定购物车样式 */
+      .mobile-bottom-cart {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #6366f1;
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        z-index: 40;
+        transition: transform 0.2s ease;
+      }
+      .mobile-bottom-cart:hover {
+        transform: scale(1.05);
+      }
+      .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 pb-20 md:pb-0">
+  <!-- 导航栏 -->
+  <nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <!-- Logo -->
+        <div class="flex items-center">
+          <i class="fa fa-gamepad text-primary text-2xl mr-2 animate-pulse"></i>
+          <span class="font-bold text-xl text-dark bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">晚风俱乐部</span>
+        </div>
+        
+        <!-- 导航链接 - 桌面版 -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#" class="font-medium text-primary border-b-2 border-primary">首页</a>
+          <a href="#services" class="font-medium text-gray-600 hover:text-primary transition-colors">服务项目</a>
+          <a href="#my-orders" class="font-medium text-gray-600 hover:text-primary transition-colors">我的订单</a>
+          <a href="#contact" class="font-medium text-gray-600 hover:text-primary transition-colors">联系我们</a>
+          <!-- 登录按钮 -->
+          <button id="desktop-login-button" class="font-medium text-gray-600 hover:text-primary transition-colors">
+            登录
+          </button>
+          <!-- 管理员入口 -->
+          <a href="#admin" id="admin-link" class="hidden font-medium text-gray-600 hover:text-primary transition-colors">
+            管理后台
+          </a>
+          <!-- 购物车按钮 -->
+          <button id="cart-button" class="relative p-2 text-gray-600 hover:text-primary transition-colors">
+            <i class="fa fa-shopping-cart text-xl"></i>
+            <span id="cart-count" class="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+          </button>
+        </div>
+        
+        <!-- 移动端菜单按钮 -->
+        <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+      
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="md:hidden hidden mt-4 pb-2">
+        <a href="#" class="block py-2 text-primary font-medium">首页</a>
+        <a href="#services" class="block py-2 text-gray-600 hover:text-primary">服务项目</a>
+        <a href="#my-orders" class="block py-2 text-gray-600 hover:text-primary">我的订单</a>
+        <a href="#contact" class="block py-2 text-gray-600 hover:text-primary">联系我们</a>
+        <button id="mobile-login-button" class="block py-2 text-gray-600 hover:text-primary">
+          登录
+        </button>
+        <button id="mobile-cart-button" class="flex items-center py-2 text-gray-600 hover:text-primary">
+          <i class="fa fa-shopping-cart mr-2"></i> 购物车
+          <span id="mobile-cart-count" class="ml-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 移动端底部固定购物车按钮 -->
+  <button id="fixed-mobile-cart" class="mobile-bottom-cart md:hidden">
+    <i class="fa fa-shopping-cart"></i>
+    <span id="fixed-cart-count" class="cart-badge">0</span>
+  </button>
+
+  <!-- 英雄区 -->
+  <header class="bg-gradient-primary text-white py-16 md:py-24">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-3xl md:text-5xl font-bold mb-6 text-shadow">晚风俱乐部</h1>
+        <p class="text-xl mb-8 text-light">专业游戏服务 · 优质装备 · 全新体验</p>
+        <div class="flex justify-center">
+          <a href="#services" class="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:bg-gray-100 transition-colors">
+            查看服务
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 公告栏 -->
+  <section class="bg-yellow-50 border-b border-yellow-200 py-3">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-center text-yellow-800 text-sm">
+        <i class="fa fa-bullhorn mr-2"></i>
+        <p class="text-center">新团开张，欢迎板单点，除陪伴自身问题外其他概不退</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 服务项目 -->
+  <section id="services" class="py-16">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">服务项目</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">我们提供多种游戏服务，满足您的不同需求</p>
+      </div>
+      
+      <!-- 服务选项卡 -->
+      <div class="mb-8">
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+          <button class="service-tab px-4 py-2 rounded-full bg-primary text-white" data-target="technical">技术服务</button>
+          <button class="service-tab px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-target="car">车里蹲</button>
+          <button class="service-tab px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-target="specific">指定单</button>
+          <button class="service-tab px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-target="pvp">PVP</button>
+          <button class="service-tab px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-target="level">代肝</button>
+          <button class="service-tab px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-target="equipment">装备商城</button>
+        </div>
+      </div>
+      
+      <!-- 服务内容 -->
+      <div class="service-content" id="technical-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">技术服务</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">古城技术 - 带装备</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>包含全套装备</span>
+                  <span class="font-medium text-primary">1.5元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('古城技术', '带装备', 1.5)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">古城技术 - 不带装备</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>需自备装备</span>
+                  <span class="font-medium text-primary">1.2元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('古城技术', '不带装备', 1.2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">昆仑技术</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>默认带装备</span>
+                  <span class="font-medium text-primary">1.6元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('昆仑技术', '默认带装备', 1.6)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">噩梦技术</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>专业技术</span>
+                  <span class="font-medium text-primary">3元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('噩梦技术', '专业技术', 3)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="service-content hidden" id="car-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">车里蹲</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">古城车里蹲</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>无装备</span>
+                  <span class="font-medium text-primary">1.2元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('古城车里蹲', '无装备', 1.2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">昆仑车里蹲</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>无装备</span>
+                  <span class="font-medium text-primary">1.8元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('昆仑车里蹲', '无装备', 1.8)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">双队车里蹲</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between">
+                  <span>含1桃木剑、4摸金符</span>
+                  <span class="font-medium text-primary">3元/局</span>
+                </li>
+              </ul>
+              <button class="mt-4 w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('双队车里蹲', '含1桃木剑、4摸金符', 3)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="service-content hidden" id="specific-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">指定单</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">神鹿</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">34元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '神鹿', 34)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">戒指</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">1.2元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '戒指', 1.2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">双鱼玉佩</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">2.4元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '双鱼玉佩', 2.4)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">面具</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">4.8元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '面具', 4.8)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">鬼玺</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">7.2元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '鬼玺', 7.2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">尸香魔芋</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">6元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '尸香魔芋', 6)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">大剑</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">53元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '大剑', 53)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">圣杯</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">94元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '圣杯', 94)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">雪莲</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">4.8元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '雪莲', 4.8)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">白玉环</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">15元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('指定单', '白玉环', 15)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="service-content hidden" id="pvp-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">PVP</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">双队PVP</h4>
+              <p class="text-sm text-gray-500 mb-3">专业PVP对战服务，提供1v1、2v2、3v3多种模式</p>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">1人</p>
+                  <p class="text-primary font-bold">3元/局</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('双队PVP', '1人', 3)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">2人</p>
+                  <p class="text-primary font-bold">5元/局</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('双队PVP', '2人', 5)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">3人</p>
+                  <p class="text-primary font-bold">8元/局</p>
+                  <p class="text-xs text-red-500">(不建议)</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('双队PVP', '3人', 8)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+              </div>
+              <div class="bg-blue-50 p-2 rounded text-xs text-blue-700">
+                <i class="fa fa-info-circle mr-1"></i> 包含专业战术指导，胜率保障
+              </div>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">四队PVP</h4>
+              <p class="text-sm text-gray-500 mb-3">多人混战PVP模式，支持1-3人组队参与</p>
+              <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">1人</p>
+                  <p class="text-primary font-bold">4元/局</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('四队PVP', '1人', 4)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">2人</p>
+                  <p class="text-primary font-bold">7元/局</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('四队PVP', '2人', 7)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+                <div class="border border-gray-200 rounded p-2 text-center">
+                  <p class="text-sm font-medium">3人</p>
+                  <p class="text-primary font-bold">8元/局</p>
+                  <button class="mt-2 w-full py-1 bg-primary text-white text-sm rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('四队PVP', '3人', 8)">
+                    <i class="fa fa-plus mr-1"></i> 加入
+                  </button>
+                </div>
+              </div>
+              <div class="bg-blue-50 p-2 rounded text-xs text-blue-700 mb-3">
+                <i class="fa fa-info-circle mr-1"></i> 四人混战模式，更刺激的对战体验
+              </div>
+              <div class="border border-gray-200 rounded-lg p-3">
+                <h5 class="font-medium text-sm mb-2">额外选项</h5>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm">喷包</span>
+                  <div class="flex items-center">
+                    <span class="text-primary font-medium mr-3">+2元</span>
+                    <button class="py-1 px-3 bg-primary text-white text-xs rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('四队PVP额外选项', '喷包', 2)">
+                      <i class="fa fa-plus mr-1"></i> 添加
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="service-content hidden" id="level-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">代肝</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">100万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">6元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '100万', 6)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">200万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">9元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '200万', 9)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">300万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">12元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '300万', 12)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">500万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">18元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '500万', 18)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">1000万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">30元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '1000万', 30)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">2000万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">50元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '2000万', 50)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">3000万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">70元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '3000万', 70)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">5000万</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">100元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '5000万', 100)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">1亿</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">180元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('代肝', '1亿', 180)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="service-content hidden" id="equipment-content">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h3 class="text-xl font-bold mb-4 text-primary">装备商城</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">桃木剑</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">1.5元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '桃木剑', 1.5)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">摸金符</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">0.8元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '摸金符', 0.8)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">洛阳铲</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">2元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '洛阳铲', 2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">黑驴蹄子</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">1.2元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '黑驴蹄子', 1.2)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">工兵铲</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">3元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '工兵铲', 3)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">登山镐</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">2.5元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '登山镐', 2.5)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">手电筒</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">0.5元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '手电筒', 0.5)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">绳索</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">1元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '绳索', 1)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">医疗包</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">1.8元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '医疗包', 1.8)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+            
+            <div class="border border-gray-200 rounded-lg p-4 card-hover">
+              <h4 class="font-bold mb-2">信号枪</h4>
+              <div class="text-right mb-3">
+                <span class="text-xl font-medium text-primary">4元</span>
+              </div>
+              <button class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition flex items-center justify-center" onclick="addToCart('装备', '信号枪', 4)">
+                <i class="fa fa-plus mr-2"></i> 加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我的订单 -->
+  <section id="my-orders" class="py-16 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold">我的订单</h2>
+        <div id="order-filters" class="flex items-center space-x-4">
+          <select id="status-filter" class="border border-gray-300 rounded px-3 py-2 text-sm">
+            <option value="all">全部状态</option>
+            <option value="pending">待处理</option>
+            <option value="processing">处理中</option>
+            <option value="completed">已完成</option>
+            <option value="cancelled">已取消</option>
+          </select>
+          <input type="text" id="order-search" placeholder="搜索订单编号或游戏ID" class="border border-gray-300 rounded px-3 py-2 text-sm">
+          <button id="search-button" class="bg-primary text-white px-3 py-2 rounded text-sm hover:bg-primary/90 transition">
+            <i class="fa fa-search mr-1"></i> 搜索
+          </button>
+        </div>
+      </div>
+      
+      <div id="orders-container" class="bg-white rounded-xl shadow-sm p-6">
+        <div id="orders-placeholder" class="text-center py-12">
+          <i class="fa fa-shopping-bag text-gray-300 text-5xl mb-4"></i>
+          <p class="text-gray-500">您还没有订单记录</p>
+          <p class="text-gray-400 text-sm mt-2">请先登录并下单</p>
+        </div>
+        
+        <div id="orders-list" class="hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">订单编号</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">订单内容</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">游戏ID</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">价格</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下单时间</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
+                <!-- 订单列表将通过JavaScript动态生成 -->
+              </tbody>
+            </table>
+          </div>
+          
+          <div id="orders-pagination" class="flex justify-between items-center mt-6">
+            <div class="text-sm text-gray-500">
+              显示 <span id="orders-range-start">1</span> 到 <span id="orders-range-end">10</span> 条，共 <span id="orders-total">0</span> 条
+            </div>
+            <div class="flex space-x-2">
+              <button id="prev-page" class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50">上一页</button>
+              <button id="next-page" class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50">下一页</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 管理员页面 -->
+  <section id="admin" class="py-16 bg-gray-100 hidden">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold">订单管理</h2>
+        <div class="flex items-center space-x-4">
+          <button id="back-to-user" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+            <i class="fa fa-arrow-left mr-1"></i> 返回用户页面
+          </button>
+          <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+            <i class="fa fa-sign-out mr-1"></i> 退出登录
+          </button>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex flex-wrap justify-between items-center mb-6">
+          <div class="flex items-center space-x-4 mb-4 md:mb-0">
+            <select id="admin-status-filter" class="border border-gray-300 rounded px-3 py-2 text-sm">
+              <option value="all">全部状态</option>
+              <option value="pending">待处理</option>
+              <option value="processing">处理中</option>
+              <option value="completed">已完成</option>
+              <option value="cancelled">已取消</option>
+            </select>
+            <select id="admin-user-filter" class="border border-gray-300 rounded px-3 py-2 text-sm">
+              <option value="all">所有用户</option>
+              <option value="1">顾客 (ID: 1)</option>
+            </select>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="admin-order-search" placeholder="搜索订单编号或游戏ID" class="border border-gray-300 rounded px-3 py-2 text-sm">
+            <button id="admin-search-button" class="bg-primary text-white px-3 py-2 rounded text-sm hover:bg-primary/90 transition">
+              <i class="fa fa-search mr-1"></i> 搜索
+            </button>
+          </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">订单编号</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户ID</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">订单内容</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">游戏ID</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">价格</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">备注</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下单时间</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-table-body" class="bg-white divide-y divide-gray-200">
+              <!-- 管理员订单列表将通过JavaScript动态生成 -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="admin-orders-pagination" class="flex justify-between items-center mt-6">
+          <div class="text-sm text-gray-500">
+            显示 <span id="admin-orders-range-start">1</span> 到 <span id="admin-orders-range-end">10</span> 条，共 <span id="admin-orders-total">0</span> 条
+          </div>
+          <div class="flex space-x-2">
+            <button id="admin-prev-page" class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50">上一页</button>
+            <button id="admin-next-page" class="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50">下一页</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系我们 -->
+  <section id="contact" class="py-16">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">联系我们</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">如有任何问题，请随时联系我们</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="text-xl font-bold mb-4 text-primary">联系方式</h3>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
+                <i class="fa fa-wechat text-primary"></i>
+              </div>
+              <div>
+                <h4 class="font-medium">微信</h4>
+                <p class="text-gray-600">Y200374fr</p>
+              </div>
+            </div>
+            
+
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h3 class="text-xl font-bold mb-4 text-primary">留言</h3>
+          <form id="contact-form">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+              <input type="text" class="w-full border border-gray-300 rounded p-2" placeholder="请输入您的姓名">
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">联系方式</label>
+              <input type="text" class="w-full border border-gray-300 rounded p-2" placeholder="请输入您的联系方式">
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">留言内容</label>
+              <textarea class="w-full border border-gray-300 rounded p-2 h-32" placeholder="请输入您的留言内容"></textarea>
+            </div>
+            
+            <button type="submit" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition">
+              提交留言
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-lg font-bold mb-4">晚风俱乐部</h3>
+          <p class="text-gray-400">专业游戏服务提供商，为您提供优质的游戏体验</p>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">快速链接</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">首页</a></li>
+            <li><a href="#services" class="text-gray-400 hover:text-white transition">服务项目</a></li>
+            <li><a href="#my-orders" class="text-gray-400 hover:text-white transition">我的订单</a></li>
+            <li><a href="#contact" class="text-gray-400 hover:text-white transition">联系我们</a></li>
+          </ul>
+        </div>
+        
+
+      </div>
+      
+      <div class="mt-4 pt-4 text-center text-gray-400 text-sm">
+        <p>© 2025 晚风俱乐部</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 购物车模态框 -->
+  <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">购物车</h3>
+        <button onclick="closeCartModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div id="cart-items" class="max-h-80 overflow-y-auto mb-4">
+        <!-- 购物车为空时显示 -->
+        <div id="empty-cart" class="text-center py-8">
+          <i class="fa fa-shopping-cart text-gray-300 text-3xl mb-2"></i>
+          <p class="text-gray-500">购物车是空的</p>
+        </div>
+        
+        <!-- 购物车商品列表 -->
+        <div id="cart-list" class="hidden space-y-3">
+          <!-- 购物车商品项将通过JavaScript动态生成 -->
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-200 pt-4">
+        <div class="flex justify-between mb-4">
+          <span class="font-medium">总计</span>
+          <span id="cart-total" class="font-bold text-primary">0元</span>
+        </div>
+        
+        <button id="checkout-button" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition" disabled="">
+          结算
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结算模态框 -->
+  <div id="checkout-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-lg p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">结算</h3>
+        <button onclick="closeCheckoutModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">游戏ID <span class="text-red-500">*</span></label>
+        <input type="text" id="game-id" class="w-full border border-gray-300 rounded p-2" placeholder="请输入您的游戏ID">
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">备注</label>
+        <textarea id="order-remark" class="w-full border border-gray-300 rounded p-2 h-24" placeholder="请输入备注信息（可选）"></textarea>
+      </div>
+      
+      <div class="border-t border-gray-200 pt-4">
+        <div class="flex justify-between mb-4">
+          <span class="font-medium">总计</span>
+          <span id="checkout-total" class="font-bold text-primary">0元</span>
+        </div>
+        
+        <button onclick="submitOrder()" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition">
+          提交订单
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 登录模态框 -->
+  <div id="login-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-md p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">用户登录</h3>
+        <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+        <input type="text" id="login-username" class="w-full border border-gray-300 rounded p-2" placeholder="请输入用户名">
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+        <input type="password" id="login-password" class="w-full border border-gray-300 rounded p-2" placeholder="请输入密码">
+      </div>
+      
+      <button onclick="login()" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition">
+        登录
+      </button>
+      
+      <div class="mt-4 text-center text-sm text-gray-500">
+        <p>顾客账号：customer，密码：customer123</p>
+        <p class="mt-1">管理员账号：admin，密码：admin123</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 订单成功模态框 -->
+  <div id="success-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-md p-6 text-center">
+      <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fa fa-check text-green-500 text-2xl"></i>
+      </div>
+      
+      <h3 class="text-xl font-bold mb-2">订单提交成功</h3>
+      <p class="text-gray-500 mb-6">请联系客服完成支付，我们将尽快为您服务</p>
+      
+      <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+        <div class="flex justify-between mb-2">
+          <span class="text-gray-500">订单编号</span>
+          <span id="success-order-id" class="font-medium">WF202507210001</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">订单金额</span>
+          <span id="success-order-amount" class="font-medium text-primary">0元</span>
+        </div>
+      </div>
+      
+      <button onclick="closeSuccessModal()" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition">
+        确定
+      </button>
+    </div>
+  </div>
+
+  <!-- 订单状态更新模态框 -->
+  <div id="update-status-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg w-full max-w-md p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold">更新订单状态</h3>
+        <button onclick="closeUpdateStatusModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="mb-4">
+        <p class="mb-2">订单编号：<span id="update-order-id" class="font-medium"></span></p>
+        <p class="mb-4">当前状态：<span id="update-current-status" class="font-medium"></span></p>
+        
+        <label class="block text-sm font-medium text-gray-700 mb-1">新状态</label>
+        <select id="update-status-select" class="w-full border border-gray-300 rounded p-2">
+          <option value="pending">待处理</option>
+          <option value="processing">处理中</option>
+          <option value="completed">已完成</option>
+          <option value="cancelled">已取消</option>
+        </select>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">备注</label>
+        <textarea id="update-status-remark" class="w-full border border-gray-300 rounded p-2 h-24" placeholder="请输入处理备注（可选）"></textarea>
+      </div>
+      
+      <button onclick="updateOrderStatus()" class="w-full py-2 bg-primary text-white rounded hover:bg-primary/90 transition">
+        更新状态
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 后端API地址 - 使用模拟数据模式
+    const API_BASE_URL = 'http://localhost:5000/api';
+    const USE_MOCK_DATA = true;
+    
+    // 全局存储登录令牌
+    let authToken = null;
+    let currentUser = null;
+    
+    // 购物车数据
+    let cart = [];
+    
+    // 订单分页数据
+    let currentPage = 1;
+    const ordersPerPage = 10;
+    let totalOrders = 0;
+    
+    // 模拟数据 - 用户
+    const mockUsers = [
+      {
+        id: 1,
+        username: 'customer',
+        password: 'customer123',
+        role: 'customer'
+      },
+      {
+        id: 2,
+        username: 'admin',
+        password: 'admin123',
+        role: 'admin'
+      }
+    ];
+    
+    // 模拟数据 - 订单
+    let mockOrders = [
+      {
+        id: 'WF202507210001',
+        user_id: 1,
+        game_id: 'player123',
+        order_type: '古城技术',
+        order_name: '带装备',
+        price: 1.5,
+        quantity: 5,
+        status: 'completed',
+        remark: '请尽快处理',
+        created_at: '2025-07-21T10:30:00Z'
+      },
+      {
+        id: 'WF202507200002',
+        user_id: 1,
+        game_id: 'player123',
+        order_type: '指定单',
+        order_name: '神鹿',
+        price: 34,
+        quantity: 1,
+        status: 'processing',
+        remark: '',
+        created_at: '2025-07-20T15:45:00Z'
+      },
+      {
+        id: 'WF202507190003',
+        user_id: 1,
+        game_id: 'player123',
+        order_type: '代肝',
+        order_name: '100万',
+        price: 6,
+        quantity: 2,
+        status: 'pending',
+        remark: '周末完成即可',
+        created_at: '2025-07-19T09:15:00Z'
+      }
+    ];
+    
+    // 登录模态框控制
+    function openLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+      document.getElementById('login-modal').classList.add('flex');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+      document.getElementById('login-modal').classList.remove('flex');
+    }
+
+    // 登录逻辑
+    function login() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      
+      if (!username || !password) {
+        alert('请输入用户名和密码');
+        return;
+      }
+      
+      // 模拟登录验证
+      const user = mockUsers.find(u => u.username === username && u.password === password);
+      
+      if (!user) {
+        alert('用户名或密码错误');
+        return;
+      }
+      
+      // 存储令牌和用户信息
+      authToken = 'mock_token_' + Date.now();
+      currentUser = user;
+      
+      // 保存到本地存储
+      localStorage.setItem('authToken', authToken);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      // 关闭登录模态框
+      closeLoginModal();
+      
+      // 提示登录成功
+      alert(user.role === 'admin' ? '管理员登录成功！' : '登录成功！');
+      
+      // 清空输入框
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      
+      // 更新登录状态显示
+      updateLoginStatus();
+      
+      // 根据用户角色加载不同内容
+      if (user.role === 'admin') {
+        // 管理员跳转到管理员页面
+        window.location.hash = '#admin';
+        showAdminPage();
+      } else {
+        // 普通用户加载订单
+        loadUserOrders();
+      }
+    }
+
+    // 更新登录状态显示
+    function updateLoginStatus() {
+      const desktopLoginBtn = document.getElementById('desktop-login-button');
+      const mobileLoginBtn = document.getElementById('mobile-login-button');
+      const adminLink = document.getElementById('admin-link');
+      const mobileAdminLink = document.getElementById('mobile-admin-link');
+      
+      if (currentUser) {
+        desktopLoginBtn.innerHTML = `欢迎，${currentUser.username}`;
+        desktopLoginBtn.classList.add('text-primary');
+        mobileLoginBtn.innerHTML = `欢迎，${currentUser.username}`;
+        mobileLoginBtn.classList.add('text-primary');
+        
+        // 显示管理员入口（仅管理员可见）
+        if (currentUser.role === 'admin') {
+          adminLink.classList.remove('hidden');
+          mobileAdminLink.classList.remove('hidden');
+          
+          // 如果当前URL是管理员页面，则显示管理员页面
+          if (window.location.hash === '#admin') {
+            showAdminPage();
+          }
+        } else {
+          adminLink.classList.add('hidden');
+          mobileAdminLink.classList.add('hidden');
+        }
+      } else {
+        desktopLoginBtn.innerHTML = '登录';
+        desktopLoginBtn.classList.remove('text-primary');
+        mobileLoginBtn.innerHTML = '登录';
+        mobileLoginBtn.classList.remove('text-primary');
+        adminLink.classList.add('hidden');
+        mobileAdminLink.classList.add('hidden');
+      }
+    }
+
+    // 购物车相关函数
+    function addToCart(type, name, price) {
+      // 检查是否已登录
+      if (!authToken) {
+        alert('请先登录');
+        openLoginModal();
+        return;
+      }
+      
+      // 检查商品是否已在购物车中
+      const existingItem = cart.find(item => item.type === type && item.name === name);
+      
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          type,
+          name,
+          price,
+          quantity: 1
+        });
+      }
+      
+      // 更新购物车显示
+      updateCartDisplay();
+      
+      // 显示添加成功提示
+      alert('商品已添加到购物车');
+    }
+
+    function updateCartDisplay() {
+      // 更新购物车数量显示
+      const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+      document.getElementById('cart-count').textContent = cartCount;
+      document.getElementById('mobile-cart-count').textContent = cartCount;
+      document.getElementById('fixed-cart-count').textContent = cartCount;
+      
+      // 更新购物车列表
+      const cartList = document.getElementById('cart-list');
+      const emptyCart = document.getElementById('empty-cart');
+      const checkoutButton = document.getElementById('checkout-button');
+      
+      if (cart.length === 0) {
+        cartList.classList.add('hidden');
+        emptyCart.classList.remove('hidden');
+        checkoutButton.disabled = true;
+      } else {
+        cartList.classList.remove('hidden');
+        emptyCart.classList.add('hidden');
+        checkoutButton.disabled = false;
+        
+        // 清空购物车列表
+        cartList.innerHTML = '';
+        
+        // 添加购物车商品
+        cart.forEach((item, index) => {
+          const itemTotal = (item.price * item.quantity).toFixed(2);
+          
+          const itemElement = document.createElement('div');
+          itemElement.className = 'flex items-center justify-between border-b border-gray-100 pb-3';
+          itemElement.innerHTML = `
+            <div class="flex items-center">
+              <div>
+                <h4 class="font-medium">${item.name}</h4>
+                <p class="text-sm text-gray-500">${item.type}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="flex items-center border border-gray-300 rounded">
+                <button onclick="decreaseQuantity(${index})" class="px-2 py-1 text-gray-500 hover:text-gray-700">-</button>
+                <span class="px-3 py-1">${item.quantity}</span>
+                <button onclick="increaseQuantity(${index})" class="px-2 py-1 text-gray-500 hover:text-gray-700">+</button>
+              </div>
+              <span class="ml-4 font-medium">${itemTotal}元</span>
+              <button onclick="removeFromCart(${index})" class="ml-4 text-red-500 hover:text-red-700">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          `;
+          
+          cartList.appendChild(itemElement);
+        });
+        
+        // 更新购物车总计
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('cart-total').textContent = `${total.toFixed(2)}元`;
+        document.getElementById('checkout-total').textContent = `${total.toFixed(2)}元`;
+      }
+    }
+
+    function decreaseQuantity(index) {
+      if (cart[index].quantity > 1) {
+        cart[index].quantity -= 1;
+      } else {
+        cart.splice(index, 1);
+      }
+      updateCartDisplay();
+    }
+
+    function increaseQuantity(index) {
+      cart[index].quantity += 1;
+      updateCartDisplay();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartDisplay();
+    }
+
+    // 购物车模态框控制
+    function openCartModal() {
+      document.getElementById('cart-modal').classList.remove('hidden');
+      document.getElementById('cart-modal').classList.add('flex');
+    }
+
+    function closeCartModal() {
+      document.getElementById('cart-modal').classList.add('hidden');
+      document.getElementById('cart-modal').classList.remove('flex');
+    }
+
+    // 结算模态框控制
+    function openCheckoutModal() {
+      closeCartModal();
+      document.getElementById('checkout-modal').classList.remove('hidden');
+      document.getElementById('checkout-modal').classList.add('flex');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkout-modal').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('flex');
+    }
+
+    // 订单成功模态框控制
+    function openSuccessModal(orderId, amount) {
+      closeCheckoutModal();
+      document.getElementById('success-order-id').textContent = orderId;
+      document.getElementById('success-order-amount').textContent = `${amount.toFixed(2)}元`;
+      document.getElementById('success-modal').classList.remove('hidden');
+      document.getElementById('success-modal').classList.add('flex');
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('success-modal').classList.add('hidden');
+      document.getElementById('success-modal').classList.remove('flex');
+      
+      // 清空购物车
+      cart = [];
+      updateCartDisplay();
+      
+      // 重新加载订单
+      loadUserOrders();
+    }
+
+    // 提交订单
+    function submitOrder() {
+      const gameId = document.getElementById('game-id').value;
+      const remark = document.getElementById('order-remark').value;
+      
+      if (!gameId) {
+        alert('请输入游戏ID');
+        return;
+      }
+      
+      // 检查是否已登录
+      if (!authToken) {
+        alert('请先登录');
+        openLoginModal();
+        return;
+      }
+      
+      // 计算总价
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      // 为每个购物车项创建订单
+      cart.forEach(item => {
+        const orderId = `WF${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        
+        const newOrder = {
+          id: orderId,
+          user_id: currentUser.id,
+          game_id: gameId,
+          order_type: item.type,
+          order_name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          status: 'pending',
+          remark: remark,
+          created_at: new Date().toISOString()
+        };
+        
+        // 添加到模拟订单数据
+        mockOrders.unshift(newOrder);
+      });
+      
+      // 显示订单成功模态框
+      const orderId = `WF${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+      openSuccessModal(orderId, total);
+    }
+
+    // 加载用户订单
+    function loadUserOrders() {
+      // 检查是否已登录
+      if (!authToken || !currentUser) {
+        return;
+      }
+      
+      // 过滤用户订单
+      const userOrders = mockOrders.filter(order => order.user_id === currentUser.id);
+      totalOrders = userOrders.length;
+      
+      // 更新订单列表
+      updateOrdersList(userOrders);
+    }
+    
+    // 加载管理员订单
+    function loadAdminOrders() {
+      // 检查是否是管理员
+      if (!authToken || !currentUser || currentUser.role !== 'admin') {
+        return;
+      }
+      
+      // 获取所有订单
+      totalOrders = mockOrders.length;
+      
+      // 更新管理员订单列表
+      updateAdminOrdersList(mockOrders);
+    }
+
+    // 更新用户订单列表
+    function updateOrdersList(orders) {
+      const ordersPlaceholder = document.getElementById('orders-placeholder');
+      const ordersList = document.getElementById('orders-list');
+      const ordersTableBody = document.getElementById('orders-table-body');
+      
+      if (orders.length === 0) {
+        ordersPlaceholder.classList.remove('hidden');
+        ordersList.classList.add('hidden');
+      } else {
+        ordersPlaceholder.classList.add('hidden');
+        ordersList.classList.remove('hidden');
+        
+        // 清空订单列表
+        ordersTableBody.innerHTML = '';
+        
+        // 添加订单
+        orders.forEach(order => {
+          const row = document.createElement('tr');
+          
+          // 格式化日期
+          const formattedDate = new Date(order.created_at).toLocaleString('zh-CN');
+          
+          // 设置状态样式
+          let statusClass = '';
+          let statusText = '';
+          
+          switch (order.status) {
+            case 'pending':
+              statusClass = 'bg-yellow-100 text-yellow-800';
+              statusText = '待处理';
+              break;
+            case 'processing':
+              statusClass = 'bg-blue-100 text-blue-800';
+              statusText = '处理中';
+              break;
+            case 'completed':
+              statusClass = 'bg-green-100 text-green-800';
+              statusText = '已完成';
+              break;
+            case 'cancelled':
+              statusClass = 'bg-red-100 text-red-800';
+              statusText = '已取消';
+              break;
+            default:
+              statusClass = 'bg-gray-100 text-gray-800';
+              statusText = order.status;
+          }
+          
+          // 操作按钮
+          let actionButton = '';
+          if (order.status === 'pending') {
+            actionButton = `<button onclick="cancelOrder('${order.id}')" class="text-red-500 hover:text-red-700 text-sm">取消订单</button>`;
+          } else {
+            actionButton = '<span class="text-gray-400 text-sm">-</span>';
+          }
+          
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900">${order.id}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900">${order.order_name}</div>
+              <div class="text-xs text-gray-500">${order.order_type} × ${order.quantity}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">${order.game_id}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">${(order.price * order.quantity).toFixed(2)}元</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                ${statusText}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${formattedDate}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              ${actionButton}
+            </td>
+          `;
+          
+          ordersTableBody.appendChild(row);
+        });
+        
+        // 更新分页信息
+        updatePagination();
+      }
+    }
+    
+    // 更新管理员订单列表
+    function updateAdminOrdersList(orders) {
+      const adminOrdersTableBody = document.getElementById('admin-orders-table-body');
+      
+      // 清空订单列表
+      adminOrdersTableBody.innerHTML = '';
+      
+      // 添加订单
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+        
+        // 格式化日期
+        const formattedDate = new Date(order.created_at).toLocaleString('zh-CN');
+        
+        // 设置状态样式
+        let statusClass = '';
+        let statusText = '';
+        
+        switch (order.status) {
+          case 'pending':
+            statusClass = 'bg-yellow-100 text-yellow-800';
+            statusText = '待处理';
+            break;
+          case 'processing':
+            statusClass = 'bg-blue-100 text-blue-800';
+            statusText = '处理中';
+            break;
+          case 'completed':
+            statusClass = 'bg-green-100 text-green-800';
+            statusText = '已完成';
+            break;
+          case 'cancelled':
+            statusClass = 'bg-red-100 text-red-800';
+            statusText = '已取消';
+            break;
+          default:
+            statusClass = 'bg-gray-100 text-gray-800';
+            statusText = order.status;
+        }
+        
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${order.id}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${order.user_id}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-900">${order.order_name}</div>
+            <div class="text-xs text-gray-500">${order.order_type} × ${order.quantity}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${order.game_id}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${(order.price * order.quantity).toFixed(2)}元</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+              ${statusText}
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-900">${order.remark || '-'}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${formattedDate}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button onclick="openUpdateStatusModal('${order.id}')" class="text-primary hover:text-primary/80 text-sm">
+              更新状态
+            </button>
+          </td>
+        `;
+        
+        adminOrdersTableBody.appendChild(row);
+      });
+      
+      // 更新分页信息
+      updateAdminPagination();
+    }
+
+    // 更新用户分页信息
+    function updatePagination() {
+      const start = (currentPage - 1) * ordersPerPage + 1;
+      const end = Math.min(currentPage * ordersPerPage, totalOrders);
+      
+      document.getElementById('orders-range-start').textContent = start;
+      document.getElementById('orders-range-end').textContent = end;
+      document.getElementById('orders-total').textContent = totalOrders;
+      
+      // 更新分页按钮状态
+      document.getElementById('prev-page').disabled = currentPage === 1;
+      document.getElementById('next-page').disabled = end >= totalOrders;
+    }
+    
+    // 更新管理员分页信息
+    function updateAdminPagination() {
+      const start = (currentPage - 1) * ordersPerPage + 1;
+      const end = Math.min(currentPage * ordersPerPage, totalOrders);
+      
+      document.getElementById('admin-orders-range-start').textContent = start;
+      document.getElementById('admin-orders-range-end').textContent = end;
+      document.getElementById('admin-orders-total').textContent = totalOrders;
+      
+      // 更新分页按钮状态
+      document.getElementById('admin-prev-page').disabled = currentPage === 1;
+      document.getElementById('admin-next-page').disabled = end >= totalOrders;
+    }
+
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 移动端菜单切换
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      mobileMenuButton.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // 登录按钮点击事件
+      document.getElementById('desktop-login-button').addEventListener('click', openLoginModal);
+      document.getElementById('mobile-login-button').addEventListener('click', openLoginModal);
+      
+      // 购物车按钮点击事件
+      document.getElementById('cart-button').addEventListener('click', openCartModal);
+      document.getElementById('mobile-cart-button').addEventListener('click', openCartModal);
+      document.getElementById('fixed-mobile-cart').addEventListener('click', openCartModal);
+      
+      // 结算按钮点击事件
+      document.getElementById('checkout-button').addEventListener('click', openCheckoutModal);
+      
+      // 服务选项卡切换
+      const serviceTabs = document.querySelectorAll('.service-tab');
+      const serviceContents = document.querySelectorAll('.service-content');
+      
+      serviceTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          const target = this.getAttribute('data-target');
+          
+          // 更新选项卡样式
+          serviceTabs.forEach(t => {
+            t.classList.remove('bg-primary', 'text-white');
+            t.classList.add('bg-gray-200', 'text-gray-700');
+          });
+          
+          this.classList.remove('bg-gray-200', 'text-gray-700');
+          this.classList.add('bg-primary', 'text-white');
+          
+          // 显示对应内容
+          serviceContents.forEach(content => {
+            content.classList.add('hidden');
+          });
+          
+          document.getElementById(`${target}-content`).classList.remove('hidden');
+        });
+      });
+      
+      // 联系表单提交
+      document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('留言提交成功，我们会尽快联系您！');
+        this.reset();
+      });
+      
+      // 初始化购物车显示
+      updateCartDisplay();
+      
+      // 尝试从本地存储加载登录状态
+      const savedToken = localStorage.getItem('authToken');
+      const savedUser = localStorage.getItem('currentUser');
+      
+      if (savedToken && savedUser) {
+        authToken = savedToken;
+        currentUser = JSON.parse(savedUser);
+        updateLoginStatus();
+        loadUserOrders();
+      }
+    });
+  </script>
+
+</body></html>
