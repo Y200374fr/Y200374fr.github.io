@@ -1,33 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // 中间件
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
 
-// 模拟数据 - 用户
+// 模拟数据
 const users = [
-  {
-    id: 1,
-    username: 'customer',
-    password: 'customer123',
-    role: 'customer'
-  },
-  {
-    id: 2,
-    username: 'admin',
-    password: 'admin123',
-    role: 'admin'
-  }
+  { id: 1, username: 'customer', password: 'customer123', role: 'customer' },
+  { id: 2, username: 'admin', password: 'admin123', role: 'admin' }
 ];
 
-// 模拟数据 - 订单
 let orders = [
   {
     id: 'WF202507210001',
@@ -67,354 +55,6 @@ let orders = [
   }
 ];
 
-// 模拟数据 - 服务项目
-const services = [
-  {
-    id: 1,
-    category: 'technical',
-    name: '古城技术 - 带装备',
-    description: '包含全套装备',
-    price: 1.5,
-    unit: '局'
-  },
-  {
-    id: 2,
-    category: 'technical',
-    name: '古城技术 - 不带装备',
-    description: '需自备装备',
-    price: 1.2,
-    unit: '局'
-  },
-  {
-    id: 3,
-    category: 'technical',
-    name: '昆仑技术',
-    description: '默认带装备',
-    price: 1.6,
-    unit: '局'
-  },
-  {
-    id: 4,
-    category: 'technical',
-    name: '噩梦技术',
-    description: '专业技术',
-    price: 3,
-    unit: '局'
-  },
-  {
-    id: 5,
-    category: 'car',
-    name: '古城车里蹲',
-    description: '无装备',
-    price: 1.2,
-    unit: '局'
-  },
-  {
-    id: 6,
-    category: 'car',
-    name: '昆仑车里蹲',
-    description: '无装备',
-    price: 1.8,
-    unit: '局'
-  },
-  {
-    id: 7,
-    category: 'car',
-    name: '双队车里蹲',
-    description: '含1桃木剑、4摸金符',
-    price: 3,
-    unit: '局'
-  },
-  {
-    id: 8,
-    category: 'specific',
-    name: '神鹿',
-    description: '',
-    price: 34,
-    unit: '个'
-  },
-  {
-    id: 9,
-    category: 'specific',
-    name: '戒指',
-    description: '',
-    price: 1.2,
-    unit: '个'
-  },
-  {
-    id: 10,
-    category: 'specific',
-    name: '双鱼玉佩',
-    description: '',
-    price: 2.4,
-    unit: '个'
-  },
-  {
-    id: 11,
-    category: 'specific',
-    name: '面具',
-    description: '',
-    price: 4.8,
-    unit: '个'
-  },
-  {
-    id: 12,
-    category: 'specific',
-    name: '鬼玺',
-    description: '',
-    price: 7.2,
-    unit: '个'
-  },
-  {
-    id: 13,
-    category: 'specific',
-    name: '尸香魔芋',
-    description: '',
-    price: 6,
-    unit: '个'
-  },
-  {
-    id: 14,
-    category: 'specific',
-    name: '大剑',
-    description: '',
-    price: 53,
-    unit: '个'
-  },
-  {
-    id: 15,
-    category: 'specific',
-    name: '圣杯',
-    description: '',
-    price: 94,
-    unit: '个'
-  },
-  {
-    id: 16,
-    category: 'specific',
-    name: '雪莲',
-    description: '',
-    price: 4.8,
-    unit: '个'
-  },
-  {
-    id: 17,
-    category: 'specific',
-    name: '白玉环',
-    description: '',
-    price: 15,
-    unit: '个'
-  },
-  {
-    id: 18,
-    category: 'pvp',
-    name: '双队PVP - 1人',
-    description: '专业PVP对战服务',
-    price: 3,
-    unit: '局'
-  },
-  {
-    id: 19,
-    category: 'pvp',
-    name: '双队PVP - 2人',
-    description: '专业PVP对战服务',
-    price: 5,
-    unit: '局'
-  },
-  {
-    id: 20,
-    category: 'pvp',
-    name: '双队PVP - 3人',
-    description: '专业PVP对战服务',
-    price: 8,
-    unit: '局'
-  },
-  {
-    id: 21,
-    category: 'pvp',
-    name: '四队PVP - 1人',
-    description: '多人混战PVP模式',
-    price: 4,
-    unit: '局'
-  },
-  {
-    id: 22,
-    category: 'pvp',
-    name: '四队PVP - 2人',
-    description: '多人混战PVP模式',
-    price: 7,
-    unit: '局'
-  },
-  {
-    id: 23,
-    category: 'pvp',
-    name: '四队PVP - 3人',
-    description: '多人混战PVP模式',
-    price: 8,
-    unit: '局'
-  },
-  {
-    id: 24,
-    category: 'pvp',
-    name: '四队PVP - 喷包',
-    description: '额外选项',
-    price: 2,
-    unit: '个'
-  },
-  {
-    id: 25,
-    category: 'level',
-    name: '代肝 - 100万',
-    description: '',
-    price: 6,
-    unit: '个'
-  },
-  {
-    id: 26,
-    category: 'level',
-    name: '代肝 - 200万',
-    description: '',
-    price: 9,
-    unit: '个'
-  },
-  {
-    id: 27,
-    category: 'level',
-    name: '代肝 - 300万',
-    description: '',
-    price: 12,
-    unit: '个'
-  },
-  {
-    id: 28,
-    category: 'level',
-    name: '代肝 - 500万',
-    description: '',
-    price: 18,
-    unit: '个'
-  },
-  {
-    id: 29,
-    category: 'level',
-    name: '代肝 - 1000万',
-    description: '',
-    price: 30,
-    unit: '个'
-  },
-  {
-    id: 30,
-    category: 'level',
-    name: '代肝 - 2000万',
-    description: '',
-    price: 50,
-    unit: '个'
-  },
-  {
-    id: 31,
-    category: 'level',
-    name: '代肝 - 3000万',
-    description: '',
-    price: 70,
-    unit: '个'
-  },
-  {
-    id: 32,
-    category: 'level',
-    name: '代肝 - 5000万',
-    description: '',
-    price: 100,
-    unit: '个'
-  },
-  {
-    id: 33,
-    category: 'level',
-    name: '代肝 - 1亿',
-    description: '',
-    price: 180,
-    unit: '个'
-  },
-  {
-    id: 34,
-    category: 'equipment',
-    name: '桃木剑',
-    description: '',
-    price: 1.5,
-    unit: '个'
-  },
-  {
-    id: 35,
-    category: 'equipment',
-    name: '摸金符',
-    description: '',
-    price: 0.8,
-    unit: '个'
-  },
-  {
-    id: 36,
-    category: 'equipment',
-    name: '洛阳铲',
-    description: '',
-    price: 2,
-    unit: '个'
-  },
-  {
-    id: 37,
-    category: 'equipment',
-    name: '黑驴蹄子',
-    description: '',
-    price: 1.2,
-    unit: '个'
-  },
-  {
-    id: 38,
-    category: 'equipment',
-    name: '工兵铲',
-    description: '',
-    price: 3,
-    unit: '个'
-  },
-  {
-    id: 39,
-    category: 'equipment',
-    name: '登山镐',
-    description: '',
-    price: 2.5,
-    unit: '个'
-  },
-  {
-    id: 40,
-    category: 'equipment',
-    name: '手电筒',
-    description: '',
-    price: 0.5,
-    unit: '个'
-  },
-  {
-    id: 41,
-    category: 'equipment',
-    name: '绳索',
-    description: '',
-    price: 1,
-    unit: '个'
-  },
-  {
-    id: 42,
-    category: 'equipment',
-    name: '医疗包',
-    description: '',
-    price: 1.8,
-    unit: '个'
-  },
-  {
-    id: 43,
-    category: 'equipment',
-    name: '信号枪',
-    description: '',
-    price: 4,
-    unit: '个'
-  }
-];
-
 // 生成订单ID
 function generateOrderId() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -422,18 +62,21 @@ function generateOrderId() {
   return `WF${date}${random}`;
 }
 
-// 登录API
+// 登录接口
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ error: '请输入用户名和密码' });
+  }
   
   const user = users.find(u => u.username === username && u.password === password);
   
   if (!user) {
-    return res.status(401).json({ message: '用户名或密码错误' });
+    return res.status(401).json({ error: '用户名或密码错误' });
   }
   
-  // 生成模拟token
-  const token = `token_${Date.now()}_${user.id}`;
+  const token = 'token_' + Date.now();
   
   res.json({
     token,
@@ -445,113 +88,127 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// 获取服务列表API
-app.get('/api/services', (req, res) => {
-  const category = req.query.category;
-  
-  if (category) {
-    const filteredServices = services.filter(service => service.category === category);
-    return res.json(filteredServices);
-  }
-  
-  res.json(services);
-});
-
-// 获取订单列表API
+// 获取用户订单
 app.get('/api/orders', (req, res) => {
-  const { user_id, page = 1, limit = 10 } = req.query;
+  const { user_id, status, search } = req.query;
   
-  let filteredOrders = orders;
+  let filteredOrders = [...orders];
   
   if (user_id) {
-    filteredOrders = orders.filter(order => order.user_id.toString() === user_id.toString());
+    filteredOrders = filteredOrders.filter(order => order.user_id.toString() === user_id);
   }
   
-  // 分页
-  const start = (page - 1) * limit;
-  const end = start + parseInt(limit);
-  const paginatedOrders = filteredOrders.slice(start, end);
+  if (status && status !== 'all') {
+    filteredOrders = filteredOrders.filter(order => order.status === status);
+  }
   
-  res.json({
-    orders: paginatedOrders,
-    total: filteredOrders.length,
-    page: parseInt(page),
-    limit: parseInt(limit)
-  });
+  if (search) {
+    const searchTerm = search.toLowerCase();
+    filteredOrders = filteredOrders.filter(order => 
+      order.id.toLowerCase().includes(searchTerm) || 
+      order.game_id.toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  res.json(filteredOrders);
 });
 
-// 创建订单API
+// 创建订单
 app.post('/api/orders', (req, res) => {
   const { user_id, game_id, order_items, remark } = req.body;
   
   if (!user_id || !game_id || !order_items || !Array.isArray(order_items) || order_items.length === 0) {
-    return res.status(400).json({ message: '缺少必要参数' });
+    return res.status(400).json({ error: '缺少必要参数' });
   }
   
-  // 为每个订单项创建订单
-  const createdOrders = [];
+  const newOrders = order_items.map(item => ({
+    id: generateOrderId(),
+    user_id: parseInt(user_id),
+    game_id,
+    order_type: item.type,
+    order_name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    status: 'pending',
+    remark: remark || '',
+    created_at: new Date().toISOString()
+  }));
   
-  order_items.forEach(item => {
-    const order = {
-      id: generateOrderId(),
-      user_id: parseInt(user_id),
-      game_id,
-      order_type: item.type,
-      order_name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      status: 'pending',
-      remark: remark || '',
-      created_at: new Date().toISOString()
-    };
-    
-    orders.unshift(order);
-    createdOrders.push(order);
-  });
+  orders = [...newOrders, ...orders];
   
-  res.status(201).json({
-    message: '订单创建成功',
-    orders: createdOrders
+  res.json({
+    success: true,
+    orders: newOrders
   });
 });
 
-// 更新订单状态API
+// 更新订单状态
 app.put('/api/orders/:id', (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, remark } = req.body;
   
   const orderIndex = orders.findIndex(order => order.id === id);
   
   if (orderIndex === -1) {
-    return res.status(404).json({ message: '订单不存在' });
+    return res.status(404).json({ error: '订单不存在' });
   }
   
   orders[orderIndex].status = status;
+  if (remark) {
+    orders[orderIndex].remark = remark;
+  }
   
   res.json({
-    message: '订单状态更新成功',
+    success: true,
     order: orders[orderIndex]
   });
 });
 
-// 删除订单API
-app.delete('/api/orders/:id', (req, res) => {
+// 完成订单
+app.post('/api/orders/:id/complete', (req, res) => {
   const { id } = req.params;
   
   const orderIndex = orders.findIndex(order => order.id === id);
   
   if (orderIndex === -1) {
-    return res.status(404).json({ message: '订单不存在' });
+    return res.status(404).json({ error: '订单不存在' });
   }
   
-  orders.splice(orderIndex, 1);
+  orders[orderIndex].status = 'completed';
   
-  res.json({ message: '订单删除成功' });
+  res.json({
+    success: true,
+    order: orders[orderIndex]
+  });
 });
 
-// 健康检查API
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: '服务运行正常' });
+// 取消订单
+app.post('/api/orders/:id/cancel', (req, res) => {
+  const { id } = req.params;
+  
+  const orderIndex = orders.findIndex(order => order.id === id);
+  
+  if (orderIndex === -1) {
+    return res.status(404).json({ error: '订单不存在' });
+  }
+  
+  orders[orderIndex].status = 'cancelled';
+  
+  res.json({
+    success: true,
+    order: orders[orderIndex]
+  });
+});
+
+// 获取所有用户
+app.get('/api/users', (req, res) => {
+  const userList = users.map(user => ({
+    id: user.id,
+    username: user.username,
+    role: user.role
+  }));
+  
+  res.json(userList);
 });
 
 // 提供静态文件
@@ -562,7 +219,7 @@ app.get('*', (req, res) => {
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`服务器运行在 http://localhost:${PORT}`);
-  console.log(`API文档地址: http://localhost:${PORT}/api/health`);
-  console.log(`顾客账号: customer / customer123`);
-  console.log(`管理员账号: admin / admin123`);
+  console.log('晚风俱乐部游戏服务下单平台已启动');
+  console.log('顾客账号: customer / customer123');
+  console.log('管理员账号: admin / admin123');
 });

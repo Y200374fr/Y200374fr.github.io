@@ -1,26 +1,21 @@
 {
-  "name": "wanfeng-club-game-service",
+  "name": "wanfeng-club",
   "version": "1.0.0",
   "description": "晚风俱乐部游戏服务下单平台",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "node server.js"
   },
   "keywords": [
     "游戏",
     "服务",
-    "下单平台",
-    "晚风俱乐部"
+    "下单平台"
   ],
   "author": "晚风俱乐部",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "body-parser": "^1.20.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
+    "cors": "^2.8.5"
   }
 }
