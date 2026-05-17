@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王者荣耀代练平台 - 专业代练服务</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066CC',
+                        secondary: '#FF6600',
+                        accent: '#FFD700',
+                        dark: '#1A1A2E',
+                        'dark-light': '#16213E',
+                        'dark-lighter': '#0F3460',
+                        light: '#E94560'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-in': 'slideIn 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 5px theme("colors.accent"), 0 0 10px theme("colors.accent")' },
+                            'to': { boxShadow: '0 0 10px theme("colors.accent"), 0 0 20px theme("colors.accent"), 0 0 30px theme("colors.accent")' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+            }
+            .bg-gradient-primary {
+                background: linear-gradient(135deg, theme('colors.primary'), theme('colors.primary/80'));
+            }
+            .bg-gradient-secondary {
+                background: linear-gradient(135deg, theme('colors.secondary'), theme('colors.secondary/80'));
+            }
+            .bg-gradient-accent {
+                background: linear-gradient(135deg, theme('colors.accent'), theme('colors.accent/80'));
+            }
+            .bg-gradient-dark {
+                background: linear-gradient(135deg, theme('colors.dark'), theme('colors.dark-light'));
+            }
+            .glass-effect {
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            }
+            .btn-primary {
+                @apply bg-gradient-primary text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0;
+            }
+            .btn-secondary {
+                @apply bg-gradient-secondary text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0;
+            }
+            .btn-accent {
+                @apply bg-gradient-accent text-dark font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0;
+            }
+            .btn-outline {
+                @apply border-2 border-primary text-primary font-bold py-3 px-6 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0;
+            }
+            .section-title {
+                @apply text-3xl md:text-4xl font-bold text-white mb-8 text-shadow-lg;
+            }
+            .card-title {
+                @apply text-xl font-bold text-white mb-3;
+            }
+            .badge {
+                @apply px-3 py-1 text-xs font-bold rounded-full;
+            }
+            .badge-hot {
+                @apply bg-red-500 text-white;
+            }
+            .badge-new {
+                @apply bg-green-500 text-white;
+            }
+            .badge-discount {
+                @apply bg-yellow-500 text-dark;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-dark min-h-screen text-white overflow-x-hidden">
+    <!-- 粒子背景 -->
+    <div id="particles-js" class="fixed inset-0 z-0 opacity-30"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center animate-pulse-slow">
+                        <i class="fa fa-gamepad text-2xl text-dark"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-yellow-300">
+                            王者代练
+                        </h1>
+                        <p class="text-xs text-gray-300">专业 · 高效 · 安全</p>
+                    </div>
+                </div>
+
+                <!-- 导航菜单 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-white hover:text-accent transition-colors">首页</a>
+                    <a href="#services" class="text-white hover:text-accent transition-colors">服务项目</a>
+                    <a href="#process" class="text-white hover:text-accent transition-colors">代练流程</a>
+                    <a href="#contact" class="text-white hover:text-accent transition-colors">联系我们</a>
+                </div>
+
+                <!-- 移动端菜单按钮 -->
+                <button class="md:hidden text-2xl" id="menu-toggle">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- 移动端菜单 -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+                <a href="#home" class="block py-2 text-white hover:text-accent transition-colors">首页</a>
+                <a href="#services" class="block py-2 text-white hover:text-accent transition-colors">服务项目</a>
+                <a href="#process" class="block py-2 text-white hover:text-accent transition-colors">代练流程</a>
+                <a href="#contact" class="block py-2 text-white hover:text-accent transition-colors">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页面内容 -->
+    <div id="main-content" class="pt-20">
+        <!-- 首页部分 -->
+        <section id="home" class="min-h-screen flex items-center relative">
+            <div class="container mx-auto px-4 py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 text-shadow-lg">
+                            专业<span class="text-accent">王者荣耀</span>代练服务
+                        </h1>
+                        <p class="text-xl mb-8 text-gray-300">
+                            快速上分，安全可靠，让您轻松登顶王者！
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <a href="#services" class="btn-primary">
+                                <i class="fa fa-rocket mr-2"></i>点单
+                            </a>
+                            <a href="#contact" class="btn-outline">
+                                <i class="fa fa-headphones mr-2"></i>联系客服
+                            </a>
+                        </div>
+                        <div class="mt-12 grid grid-cols-3 gap-8">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-accent">99.9%</div>
+                                <div class="text-sm text-gray-400">安全保障</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-accent">24h</div>
+                                <div class="text-sm text-gray-400">快速响应</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-accent">10k+</div>
+                                <div class="text-sm text-gray-400">成功订单</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative animate-float">
+                        <div class="glass-effect rounded-3xl p-8 relative z-10">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/482839f1e40647b58692a490c30622f7~tplv-a9rns2rl98-image.image?rcl=2026051606353172000000000199690&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1752688453&x-signature=WcRzq7fN%2Fg9%2FhP0HmXaCw0%2Bm5U%3D" 
+                                 alt="王者荣耀代练" class="w-full h-auto rounded-2xl">
+                        </div>
+                        <div class="absolute -top-4 -right-4 w-20 h-20 bg-accent rounded-full animate-glow"></div>
+                        <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-secondary rounded-full animate-pulse-slow"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 服务项目部分 -->
+        <section id="services" class="py-20 relative">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title text-center">
+                    <i class="fa fa-star text-accent mr-3"></i>服务项目
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- 排位代练 -->
+                    <div class="glass-effect rounded-2xl p-6 card-hover" onclick="showPricing('ranked')">
+                        <div class="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mb-4">
+                            <i class="fa fa-trophy text-2xl"></i>
+                        </div>
+                        <h3 class="card-title">排位代练</h3>
+                        <p class="text-gray-400 mb-4">安全高效的排位赛代练服务，帮您快速提升段位</p>
+                        <div class="flex justify-between items-center">
+                            <span class="badge badge-hot">热门</span>
+                            <button class="text-accent hover:text-white transition-colors">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 段位直通 -->
+                    <div class="glass-effect rounded-2xl p-6 card-hover" onclick="showPricing('direct')">
+                        <div class="w-16 h-16 bg-gradient-secondary rounded-xl flex items-center justify-center mb-4">
+                            <i class="fa fa-bolt text-2xl"></i>
+                        </div>
+                        <h3 class="card-title">段位直通</h3>
+                        <p class="text-gray-400 mb-4">指定段位直达服务，快速实现您的王者梦想</p>
+                        <div class="flex justify-between items-center">
+                            <span class="badge badge-new">推荐</span>
+                            <button class="text-accent hover:text-white transition-colors">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 巅峰赛 -->
+                    <div class="glass-effect rounded-2xl p-6 card-hover" onclick="showPricing('peak')">
+                        <div class="w-16 h-16 bg-gradient-accent rounded-xl flex items-center justify-center mb-4">
+                            <i class="fa fa-fire text-2xl text-dark"></i>
+                        </div>
+                        <h3 class="card-title">巅峰赛</h3>
+                        <p class="text-gray-400 mb-4">高端巅峰赛代练，冲刺更高的巅峰积分</p>
+                        <div class="flex justify-between items-center">
+                            <span class="badge badge-discount">特惠</span>
+                            <button class="text-accent hover:text-white transition-colors">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 陪玩服务 -->
+                    <div class="glass-effect rounded-2xl p-6 card-hover" onclick="showPricing('companion')">
+                        <div class="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mb-4">
+                            <i class="fa fa-users text-2xl"></i>
+                        </div>
+                        <h3 class="card-title">陪玩服务</h3>
+                        <p class="text-gray-400 mb-4">专业玩家陪玩，教学指导，提升技术水平</p>
+                        <div class="flex justify-between items-center">
+                            <span class="badge badge-hot">热销</span>
+                            <button class="text-accent hover:text-white transition-colors">
+                                查看详情 <i class="fa fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 代练流程部分 -->
+        <section id="process" class="py-20 relative">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title text-center">
+                    <i class="fa fa-cogs text-accent mr-3"></i>代练流程
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold">1</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">选择服务</h3>
+                        <p class="text-gray-400">选择您需要的代练服务类型和段位</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold">2</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">提交订单</h3>
+                        <p class="text-gray-400">填写游戏账号信息并完成支付</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-dark">3</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">点单</h3>
+                        <p class="text-gray-400">专业代练师开始为您服务</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold">4</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">完成验收</h3>
+                        <p class="text-gray-400">代练完成后进行验收确认</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我们部分 -->
+        <section id="contact" class="py-20 relative">
+            <div class="container mx-auto px-4">
+                <h2 class="section-title text-center">
+                    <i class="fa fa-headphones text-accent mr-3"></i>联系我们
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="glass-effect rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold mb-6">客服联系方式</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
+                                    <i class="fa fa-wechat text-2xl"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-400">微信客服</div>
+                                    <div class="text-lg font-bold">Y200374fr</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center">
+                                    <i class="fa fa-clock-o text-2xl text-dark"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-400">服务时间</div>
+                                    <div class="text-lg font-bold">24小时在线</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 价格页面 -->
+    <div id="pricing-page" class="fixed inset-0 bg-gradient-dark z-50 hidden overflow-y-auto" style="max-height: 100vh;">
+        <div class="container mx-auto px-4 py-20">
+            <div class="flex justify-between items-center mb-12">
+                <button onclick="showMainContent()" class="btn-outline">
+                    <i class="fa fa-arrow-left mr-2"></i>返回首页
+                </button>
+                <h2 id="pricing-title" class="text-3xl font-bold text-white"></h2>
+                <div></div>
+            </div>
+            
+            <!-- 排位代练价格表 -->
+            <div id="ranked-pricing" class="pricing-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 铂金段位 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">铂金段位</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥1</span>
+                                <span class="text-gray-300 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                快速稳定，胜率保证
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证85%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>24小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>安全保障</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：5800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('铂金段位代练', 1)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 钻石段位 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <div class="absolute top-4 right-4 badge badge-hot">
+                                热门
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">钻石段位</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥1.5</span>
+                                <span class="text-gray-300 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                专业代练，高效安全
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证80%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>48小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>专业代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：7200+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('钻石段位代练', 1.5)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 星耀段位 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">星耀段位</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥2</span>
+                                <span class="text-gray-600 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                高端代练，质量保证
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证75%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>72小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>王者代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：4500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('星耀段位代练', 2)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者0-25星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">王者0-25星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥2.5</span>
+                                <span class="text-gray-300 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                顶级代练，冲刺王者
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证70%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>96小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>荣耀王者代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：3200+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者0-25星代练', 2.5)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者26-50星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <h3 class="text-2xl font-bold mb-2">王者26-50星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥3</span>
+                                <span class="text-gray-300 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                高端王者，技术保障
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证65%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>120小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>巅峰赛选手</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：2100+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者26-50星代练', 3)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者51-100星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">王者51-100星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥3.5</span>
+                                <span class="text-gray-600 ml-2">/ 星</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                顶级高手，冲击巅峰
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证60%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>144小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>KPL选手代练</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：1500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者51-100星代练', 3.5)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 段位直通价格表 -->
+            <div id="direct-pricing" class="pricing-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 钻石直达星耀 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">钻石直达星耀</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥45</span>
+                                <span class="text-gray-300 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                一次性直达，优惠更多
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证85%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>72小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>赠送改名卡</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：3200+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('钻石直达星耀', 45)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 星耀直达王者25星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <div class="absolute top-4 right-4 badge badge-hot">
+                                热门
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">星耀直达王者25星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥65</span>
+                                <span class="text-gray-300 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                高效代练，快速上分
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证80%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>96小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>赠送皮肤</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：4800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('星耀直达王者25星', 65)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者0星直达25星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">王者0星直达25星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥68</span>
+                                <span class="text-gray-600 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                专业代练，稳定上分
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证75%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>120小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>专业代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：2100+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者0星直达25星', 68)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者0星直达50星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">王者0星直达50星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥135</span>
+                                <span class="text-gray-300 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                高端代练，高效安全
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证70%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>144小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>荣耀王者代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：1800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者0星直达50星', 135)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者0星直达75星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <h3 class="text-2xl font-bold mb-2">王者0星直达75星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥200</span>
+                                <span class="text-gray-300 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                顶级代练，技术保障
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证65%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>168小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>巅峰赛选手</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：1200+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者0星直达75星', 200)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 王者0星直达100星 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">王者0星直达100星</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥270</span>
+                                <span class="text-gray-600 ml-2">/ 全程</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                终极挑战，冲击巅峰
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证60%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>192小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>KPL选手代练</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('王者0星直达100星', 270)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 巅峰赛价格表 -->
+            <div id="peak-pricing" class="pricing-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 1200-1400分 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">1200-1400分</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥0.6</span>
+                                <span class="text-gray-300 ml-2">/ 分</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                快速提升，稳定上分
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证80%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>48小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>专业巅峰赛选手</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：3500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('巅峰赛1200-1400分', 0.6)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1400-1600分 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <div class="absolute top-4 right-4 badge badge-hot">
+                                热门
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">1400-1600分</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥0.9</span>
+                                <span class="text-gray-300 ml-2">/ 分</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                高端局代练，技术保障
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证75%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>72小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>荣耀王者代练师</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：2800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('巅峰赛1400-1600分', 0.9)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1600-1800分 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">1600-1800分</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥1.4</span>
+                                <span class="text-gray-600 ml-2">/ 分</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                顶级高手，冲刺巅峰
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证70%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>96小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>KPL选手代练</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：1500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('巅峰赛1600-1800分', 1.4)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1800-2000分 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">1800-2000分</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥2.3</span>
+                                <span class="text-gray-300 ml-2">/ 分</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                高端巅峰，技术对决
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证65%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>120小时内完成</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>职业选手代练</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('巅峰赛1800-2000分', 2.3)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2000分以上 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <h3 class="text-2xl font-bold mb-2">2000分以上</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">私聊</span>
+                                <span class="text-gray-300 ml-2">定价</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                顶级巅峰，荣耀对决
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证60%以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>定制化服务</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>顶级职业选手</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showContactModal()">
+                                联系客服
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 陪玩服务价格表 -->
+            <div id="companion-pricing" class="pricing-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 娱乐陪玩 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">娱乐陪玩</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥10</span>
+                                <span class="text-gray-300 ml-2">/ 小时</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                轻松愉快，娱乐至上
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>钻石段位以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>友好交流</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>娱乐为主</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：6800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('娱乐陪玩服务', 10)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 技术上分陪玩 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-secondary p-6">
+                            <div class="absolute top-4 right-4 badge badge-hot">
+                                热门
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">技术上分陪玩</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥15</span>
+                                <span class="text-gray-300 ml-2">/ 小时</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                技术指导，高效上分
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>王者段位以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>技术指导</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>胜率保证</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：4200+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('技术上分陪玩服务', 15)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 女神陪玩 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-accent p-6">
+                            <h3 class="text-2xl font-bold mb-2 text-dark">女神陪玩</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold text-dark">¥25</span>
+                                <span class="text-gray-600 ml-2">/ 小时</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                高颜值，好声音
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>钻石段位以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>高颜值女神</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>甜美声音</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：2800+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('女神陪玩服务', 25)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 职业选手陪玩 -->
+                    <div class="glass-effect rounded-2xl overflow-hidden card-hover">
+                        <div class="bg-gradient-primary p-6">
+                            <h3 class="text-2xl font-bold mb-2">职业选手陪玩</h3>
+                            <div class="flex items-end mb-4">
+                                <span class="text-4xl font-bold">¥35</span>
+                                <span class="text-gray-300 ml-2">/ 小时</span>
+                            </div>
+                            <p class="text-sm text-gray-300">
+                                顶级操作，专业指导
+                            </p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3 mb-6">
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>荣耀王者以上</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>职业选手</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-check text-green-400 mr-3"></i>
+                                    <span>1对1指导</span>
+                                </li>
+                                <li class="flex items-center text-gray-400">
+                                    <i class="fa fa-fire mr-3"></i>
+                                    <span>销量：1500+</span>
+                                </li>
+                            </ul>
+                            <button class="btn-primary w-full" onclick="showOrderModal('职业选手陪玩服务', 35)">
+                                立即下单
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下单模态框 -->
+    <div id="order-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4 animate-scale-in">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">确认下单</h3>
+                <button onclick="hideOrderModal()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="order-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">服务项目</label>
+                    <input type="text" id="order-service" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" readonly>
+                </div>
+                
+                <!-- 巅峰赛分数设置 -->
+                <div id="peak-score-section" class="hidden space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">当前分数</label>
+                            <input type="number" id="current-score" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="请输入当前分数" min="1200" max="3000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">目标分数</label>
+                            <input type="number" id="target-score" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="请输入目标分数" min="1200" max="3000">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">单价</label>
+                        <input type="text" id="unit-price" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" readonly>
+                    </div>
+                </div>
+                
+                <!-- 排位代练星数设置 -->
+                <div id="ranked-stars-section" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">购买星数</label>
+                        <div class="flex items-center space-x-4">
+                            <button type="button" onclick="changeStars(-1)" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">-</button>
+                            <input type="number" id="stars-count" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent text-center" value="1" min="1" max="50">
+                            <button type="button" onclick="changeStars(1)" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">单价</label>
+                        <input type="text" id="ranked-unit-price" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" readonly>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">总价</label>
+                    <input type="text" id="order-price" class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" readonly>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="button" onclick="hideOrderModal()" class="btn-outline flex-1">
+                        取消
+                    </button>
+                    <button type="submit" class="btn-primary flex-1">
+                        确认下单
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 粒子背景JS -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script>
+        // 初始化粒子背景
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#FFD700" },
+                shape: {
+                    type: "circle",
+                    stroke: { width: 0, color: "#000000" },
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: { enable: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: { enable: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#FFD700",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 1 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // 移动端菜单切换
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 显示价格页面
+        function showPricing(type) {
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('pricing-page').classList.remove('hidden');
+            
+            // 隐藏所有价格表
+            document.querySelectorAll('.pricing-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // 显示对应价格表
+            const pricingMap = {
+                'ranked': '排位代练价格表',
+                'direct': '段位直通价格表',
+                'peak': '巅峰赛价格表',
+                'companion': '陪玩服务价格表'
+            };
+            
+            document.getElementById('pricing-title').textContent = pricingMap[type];
+            document.getElementById(type + '-pricing').classList.remove('hidden');
+        }
+
+        // 返回主页面
+        function showMainContent() {
+            document.getElementById('pricing-page').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+        }
+
+        // 显示下单模态框
+        function showOrderModal(service, price) {
+            const orderService = document.getElementById('order-service');
+            const orderPrice = document.getElementById('order-price');
+            const peakScoreSection = document.getElementById('peak-score-section');
+            const rankedStarsSection = document.getElementById('ranked-stars-section');
+            const currentScore = document.getElementById('current-score');
+            const targetScore = document.getElementById('target-score');
+            const unitPrice = document.getElementById('unit-price');
+            const starsCount = document.getElementById('stars-count');
+            const rankedUnitPrice = document.getElementById('ranked-unit-price');
+            
+            orderService.value = service;
+            
+            // 隐藏所有特殊设置部分
+            peakScoreSection.classList.add('hidden');
+            rankedStarsSection.classList.add('hidden');
+            
+            // 检查是否是巅峰赛服务
+            if (service.includes('巅峰赛')) {
+                // 显示分数设置部分
+                peakScoreSection.classList.remove('hidden');
+                
+                // 从服务名称中提取分数范围
+                const scoreRange = service.match(/\d+-\d+/);
+                if (scoreRange) {
+                    const [minScore, maxScore] = scoreRange[0].split('-').map(Number);
+                    currentScore.value = minScore;
+                    targetScore.value = maxScore;
+                }
+                
+                // 设置单价
+                unitPrice.value = '¥' + price + '/分';
+                
+                // 初始计算总价
+                calculatePeakPrice();
+                
+                // 添加分数变化监听器
+                currentScore.oninput = calculatePeakPrice;
+                targetScore.oninput = calculatePeakPrice;
+            } else if (service.includes('代练')) {
+                // 显示星数设置部分
+                rankedStarsSection.classList.remove('hidden');
+                
+                // 设置初始星数为1
+                starsCount.value = 1;
+                
+                // 设置单价
+                rankedUnitPrice.value = '¥' + price + '/星';
+                
+                // 初始计算总价
+                calculateRankedPrice(price);
+                
+                // 添加星数变化监听器
+                starsCount.oninput = function() {
+                    calculateRankedPrice(price);
+                };
+            } else {
+                // 其他服务直接显示总价
+                orderPrice.value = '¥' + price;
+            }
+            
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+        
+        // 计算巅峰赛价格
+        function calculatePeakPrice() {
+            const currentScore = parseInt(document.getElementById('current-score').value) || 0;
+            const targetScore = parseInt(document.getElementById('target-score').value) || 0;
+            const orderPrice = document.getElementById('order-price');
+            
+            if (currentScore >= targetScore) {
+                orderPrice.value = '目标分数必须高于当前分数';
+                return;
+            }
+            
+            let totalPrice = 0;
+            let currentPrice = currentScore;
+            
+            // 根据分数区间计算价格
+            while (currentPrice < targetScore) {
+                if (currentPrice < 1400) {
+                    totalPrice += 0.6;
+                } else if (currentPrice < 1600) {
+                    totalPrice += 0.9;
+                } else if (currentPrice < 1800) {
+                    totalPrice += 1.4;
+                } else if (currentPrice < 2000) {
+                    totalPrice += 2.3;
+                } else {
+                    totalPrice += 5; // 2000分以上默认价格
+                }
+                currentPrice++;
+            }
+            
+            orderPrice.value = '¥' + totalPrice.toFixed(2);
+        }
+        
+        // 计算排位代练价格
+        function calculateRankedPrice(unitPrice) {
+            const starsCount = parseInt(document.getElementById('stars-count').value) || 1;
+            const orderPrice = document.getElementById('order-price');
+            
+            const totalPrice = unitPrice * starsCount;
+            orderPrice.value = '¥' + totalPrice.toFixed(2);
+        }
+        
+        // 改变星数
+        function changeStars(delta) {
+            const starsCount = document.getElementById('stars-count');
+            const currentValue = parseInt(starsCount.value) || 1;
+            const newValue = Math.max(1, Math.min(50, currentValue + delta));
+            starsCount.value = newValue;
+            
+            // 触发价格重新计算
+            starsCount.oninput();
+        }
+
+        // 隐藏下单模态框
+        function hideOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        // 表单提交处理
+        document.getElementById('order-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('订单提交成功！客服将尽快与您联系。');
+            hideOrderModal();
+        });
+
+
+        // 页面加载动画
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
+</body>
+</html>
